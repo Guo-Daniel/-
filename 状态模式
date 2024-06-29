@@ -1,0 +1,89 @@
+package com.wc.designpattern.state;
+
+/**
+ * 适合场景，数据有状态，状态就一定会流转，从状态1变成状态2
+ * 将不同的状态要执行的代码逻辑封装在不同的state类中
+ * 搞一个Context类，负责根据传入的参数，决定这份数据的状态流转到什么状态
+ * 就执行那个新状态的代码逻辑
+ *
+ * 适合的场景太比较广泛，只要有状态，都按照标准的状态模式来实现，或者重构改进代码
+ * 不同的状态逻辑放不同的state类
+ * 有一个类负责状态之间的流转以及状态逻辑的执行
+ *
+ * 对于有状态的场景，按照面向对象的思想来设计，
+ * 来替换糟糕的设计方式，包含但不限于：在一堆代码里面，if 开始执行那个状态的一堆逻辑，else if，开始执行另外一个状态的一堆逻辑。
+ * 使用状态模式可以使代码很清晰，可读性很好，可维护性很好
+ *
+ * @author wenchao
+ * @date 2021/12/23
+ */
+public class StatePatternApplication {
+    private static final int TO_BE_PAY_STATE = 1;
+    private static final int PAY_STATE = 2;
+    private static final int FINISH_STATE = 3;
+
+    interface State {
+        void exec();
+    }
+
+    static class NewState implements State {
+
+        @Override
+        public void exec() {
+            System.out.println("执订单新建状态逻辑");
+        }
+    }
+
+    static class ToBePayState implements State {
+
+        @Override
+        public void exec() {
+            System.out.println("执行订单待支付状态逻辑");
+        }
+    }
+
+    static class PayState implements State {
+
+        @Override
+        public void exec() {
+            System.out.println("执行订单已支付状态逻辑");
+        }
+    }
+
+    static class FinishedState implements State {
+
+        public void exec() {
+            System.out.println("执行订单已完成状态的逻辑");
+        }
+
+    }
+
+    static class Context {
+        private State state;
+
+        public Context(State state) {
+            this.state = state;
+            this.state.exec();
+        }
+
+        public void exec(int stateType) {
+            if (stateType == TO_BE_PAY_STATE) {
+                this.state = new ToBePayState();
+                this.state.exec();
+            } else if (stateType == PAY_STATE) {
+                this.state = new PayState();
+                this.state.exec();
+            } else if (stateType == FINISH_STATE) {
+                this.state = new FinishedState();
+                this.state.exec();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Context context = new Context(new NewState());
+        context.exec(TO_BE_PAY_STATE);
+        context.exec(PAY_STATE);
+        context.exec(FINISH_STATE);
+    }
+}
